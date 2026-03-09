@@ -1,0 +1,82 @@
+[project]
+name = "tcc-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["api", "llm"]
+
+[tool.uv]
+managed = true
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+api = { workspace = true }
+llm = { workspace = true }
+
+[tool.ruff]
+line-length = 80
+target-version = "py313"
+fix = true
+show-fixes = true
+indent-width = 4
+exclude = ["venv", ".venv", "env", ".env", "node_modules", "__pycache__"]
+
+[tool.ruff.lint]
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.pyright]
+typeCheckingMode = "standard"
+pythonVersion = "3.13"
+include = ["packages"]
+exclude = [
+  "**/venv",
+  "**/.venv",
+  "**/env",
+  "**/.env",
+  "**/node_modules",
+  "**/__pycache__",
+]
+venv = ".venv"
+venvPath = "."
+executionEnvironments = [{ root = "packages" }]
+reportMissingTypeStubs = true
+stubPath = "stubs"
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = '-p no:warnings'
+asyncio_default_fixture_loop_scope = 'function'
+
+[tool.taskipy.tasks]
+lint = 'ruff check'
+pre_format = 'ruff check --fix'
+format = 'ruff format'
+run = 'fastapi dev packages/api/src/app.py'
+
+
+test_llm = 'pytest packages/lmm -s -x --cov=packages/lmm/src -vv'
+test_api = 'pytest packages/api -s -x --cov=packages/api/src -vv'
+
+pre_test = 'task lint'
+test = 'pytest packages/ -s -x --cov=packages -vv'
+post_test = 'coverage html'
+
+[dependency-groups]
+dev = [
+  "mypy>=1.19.1",
+  "pytest>=9.0.2",
+  "pytest-asyncio>=1.3.0",
+  "pytest-cov>=7.0.0",
+  "ruff>=0.15.4",
+  "taskipy>=1.14.1",
+]
