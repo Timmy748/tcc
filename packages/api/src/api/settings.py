@@ -7,4 +7,5 @@ class Settings(BaseSettings):
         env_file=['../../.env', '.env'], env_file_encoding='utf-8'
     )
 
+    PEPPER: str = Field(init=False)
     DATABASE_URL: str = Field(init=False)
