@@ -7,7 +7,9 @@ from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from api.database import table_registry
+from api.security import get_password_hash
 from api.settings import Settings
+from tests.factories import UserFactory
 
 
 @pytest.fixture(scope='session')
@@ -45,3 +47,34 @@ def _mock_db_time(*, model, time=datetime(2026, 1, 1)):
 @pytest.fixture
 def mock_db_time():
     return _mock_db_time
+
+
+@pytest_asyncio.fixture
+async def user(session):
+    user = UserFactory(
+        password=get_password_hash('senha'),
+    )
+
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+
+    return user
+
+
+@pytest_asyncio.fixture
+async def other_user(session):
+    user = UserFactory(
+        password=get_password_hash('senha'),
+    )
+
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+
+    return user
+
+
+@pytest.fixture
+def password_hash_patch(monkeypatch):
+    monkeypatch.setattr('api.services.user.get_password_hash', lambda p: p)
