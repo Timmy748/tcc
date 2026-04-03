@@ -1,9 +1,19 @@
+from contextlib import aclosing
 from dataclasses import asdict
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.database import get_session
 from api.models.user import User
+
+
+@pytest.mark.asyncio
+async def test_get_session_yield_async_session():
+    async with aclosing(get_session()) as gen:
+        session = await anext(gen)
+        assert isinstance(session, AsyncSession)
 
 
 @pytest.mark.asyncio
