@@ -24,6 +24,7 @@ fix = true
 show-fixes = true
 indent-width = 4
 exclude = [
+  "__init__",
   "venv",
   ".venv",
   "env",
@@ -69,7 +70,7 @@ asyncio_default_fixture_loop_scope = 'function'
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
-run = 'fastapi dev packages/api/src/app.py'
+run = 'fastapi dev packages/api/src/api/app.py'
 
 
 test_llm = 'pytest packages/lmm -s -x --cov=packages/lmm/src -vv'
