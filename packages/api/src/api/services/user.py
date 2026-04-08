@@ -5,6 +5,7 @@ from sqlalchemy import exists, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.exceptions.base import ForbiddenError
 from api.exceptions.user import UserAlreadyExistsError, UserNotFoundError
 from api.models.user import User
 from api.security import get_password_hash
@@ -137,7 +138,7 @@ class UserService(UserServiceProtocol):
         self, user_id: int, requester_id: int, **data: Any
     ) -> User:
         if user_id != requester_id:
-            raise PermissionError('Ação não permitida.')
+            raise ForbiddenError('Ação não permitida.')
 
         user = await self.get_by_id(user_id)
 
@@ -188,7 +189,7 @@ class UserService(UserServiceProtocol):
     @override
     async def delete_user(self, user_id: int, requester_id: int) -> None:
         if user_id != requester_id:
-            raise PermissionError('Ação não permitida.')
+            raise ForbiddenError('Ação não permitida.')
 
         user = await self.get_by_id(user_id)
 

@@ -3,6 +3,8 @@ from dataclasses import asdict
 import pytest
 from sqlalchemy import select
 
+from api.dependecies import get_user_service
+from api.exceptions.base import ForbiddenError
 from api.exceptions.user import UserAlreadyExistsError, UserNotFoundError
 from api.models.user import User
 from api.services.user import UserService
@@ -96,7 +98,7 @@ async def test_delete_user_raises_error_when_requester_is_not_owner(
 ):
     user_service = UserService(session)
 
-    with pytest.raises(PermissionError, match='Ação não permitida.'):
+    with pytest.raises(ForbiddenError, match='Ação não permitida.'):
         await user_service.delete_user(
             user_id=user.id, requester_id=user.id + 1
         )
@@ -165,7 +167,7 @@ async def test_update_user_raises_error_when_requester_is_not_owner(
 ):
     user_service = UserService(session)
 
-    with pytest.raises(PermissionError, match='Ação não permitida.'):
+    with pytest.raises(ForbiddenError, match='Ação não permitida.'):
         await user_service.update_user(
             user_id=user.id, requester_id=user.id + 1, username='user123'
         )
@@ -277,3 +279,9 @@ async def test_get_by_id_returns_none_for_non_existent_id(session):
     searched_user = await user_service.get_by_id(user_id=1)
 
     assert searched_user is None
+
+
+@pytest.mark.asyncio
+async def test_get_user_service_return_UserService(session):
+    service = await get_user_service(session)
+    assert isinstance(service, UserService)
