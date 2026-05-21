@@ -12,6 +12,7 @@ from api.app import app
 from api.database import table_registry
 from api.dependecies import get_user_service
 from api.security import get_password_hash
+from api.services.auth import AuthService
 from api.services.user import UserService
 from api.settings import Settings
 from tests.factories import UserFactory
@@ -99,3 +100,13 @@ def client(user_service_mock):
         yield c
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def auth_service():
+    return AuthService(
+        secret_key='test_secret',
+        algorithm='HS256',
+        access_token_expire_minutes=5,
+        refresh_token_expire_days=7,
+    )

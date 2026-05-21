@@ -9,3 +9,8 @@ class Settings(BaseSettings):
 
     PEPPER: str = Field(init=False)
     DATABASE_URL: str = Field(init=False)
+
+    SECRET_KEY: str = Field(init=False)
+    ALGORITHM: str = Field(init=False)
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(init=False)
+    REFRESH_TOKEN_EXPIRE_DAYS: int = Field(init=False)
