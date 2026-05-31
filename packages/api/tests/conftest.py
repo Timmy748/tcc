@@ -21,7 +21,7 @@ from tests.factories import UserFactory
 
 @pytest.fixture(scope='session')
 def engine():
-    return create_async_engine(Settings().DATABASE_URL)
+    return create_async_engine(Settings().TEST_DATABASE_URL)
 
 
 @pytest_asyncio.fixture
