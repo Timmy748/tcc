@@ -2,6 +2,9 @@ import pytest
 from freezegun import freeze_time
 from jwt import encode
 
+from api.dependecies import get_auth_service
+from api.services.auth import AuthService
+
 
 def test_create_access_token_should_generate_valid_jwt(auth_service):
     user_id = 42
@@ -78,3 +81,9 @@ def test_verify_token_should_raise_value_error_when_token_is_expired(
             ValueError, match='Não foi possivel validar as credenciais.'
         ):
             auth_service.verify_token(token)
+
+
+@pytest.mark.asyncio
+async def test_get_auth_service_return_AuthService(session):
+    service = get_auth_service()
+    assert isinstance(service, AuthService)

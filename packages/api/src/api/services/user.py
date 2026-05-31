@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.exceptions.base import ForbiddenError
 from api.exceptions.user import UserAlreadyExistsError, UserNotFoundError
 from api.models.user import User
-from api.security import get_password_hash
+from api.security import get_password_hash, verify_password
 
 
 class UserServiceProtocol(Protocol):
@@ -36,6 +36,20 @@ class UserServiceProtocol(Protocol):
 
         Args:
             user_id(int): id do usuário a ser buscado.
+
+        Returns:
+            User | None: retorna o objeto User encontrado ou None caso não
+             encontre nenhum.
+
+        """
+        ...
+
+    @abstractmethod
+    async def get_by_email(self, email: str) -> User | None:
+        """Busca um único usuário pelo email.
+
+        Args:
+            user_email(str): email do usuário a ser buscado.
 
         Returns:
             User | None: retorna o objeto User encontrado ou None caso não
@@ -105,6 +119,21 @@ class UserServiceProtocol(Protocol):
         """
         ...
 
+    @abstractmethod
+    async def autenticate(self, email: str, password: str) -> int:
+        """Autentica um usuário com base no email e senha.
+
+        Args:
+            email(str): email do usuário.
+            password(str): senha do usuário.
+        Returns:
+            Int: retorna o id do usuário se email e senha estiverem corretos.
+
+        Raises:
+            PermissionError: se o email ou senha estiverem incorretos.
+        """
+        ...
+
 
 class UserService(UserServiceProtocol):
     """Implementação do UserServiceProtocol usando o sqlalchemy."""
@@ -128,12 +157,21 @@ class UserService(UserServiceProtocol):
 
         return result.all()
 
+    @override
     async def get_by_id(self, user_id: int) -> User | None:
         query = select(User).where(User.id == user_id)
         result = await self.session.scalar(query)
 
         return result
 
+    @override
+    async def get_by_email(self, email: str) -> User | None:
+        query = select(User).where(User.email == email)
+        result = await self.session.scalar(query)
+
+        return result
+
+    @override
     async def update_user(
         self, user_id: int, requester_id: int, **data: Any
     ) -> User:
@@ -198,3 +236,15 @@ class UserService(UserServiceProtocol):
 
         await self.session.delete(user)
         await self.session.commit()
+
+    @override
+    async def autenticate(self, email: str, password: str) -> int:
+        user = await self.get_by_email(email=email)
+
+        if not user:
+            raise PermissionError('Senha ou Email incorreto.')
+
+        if not verify_password(password, user.password):
+            raise PermissionError('Senha ou Email incorreto.')
+
+        return user.id

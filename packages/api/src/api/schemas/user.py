@@ -26,3 +26,8 @@ class UpdateUserSchema(BaseModel):
     username: str | None
     email: EmailStr | None
     password: str | None
+
+
+class LoginSchema(BaseModel):
+    email: str
+    password: str

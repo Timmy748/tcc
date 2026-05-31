@@ -1,16 +1,17 @@
 from contextlib import contextmanager
 from datetime import datetime
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 import pytest_asyncio
+from fastapi import Request
 from fastapi.testclient import TestClient
 from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from api.app import app
 from api.database import table_registry
-from api.dependecies import get_user_service
+from api.dependecies import get_auth_service, get_user_service
 from api.security import get_password_hash
 from api.services.auth import AuthService
 from api.services.user import UserService
@@ -93,8 +94,9 @@ def user_service_mock():
 
 
 @pytest.fixture
-def client(user_service_mock):
+def client(user_service_mock, mock_auth_service):
     app.dependency_overrides[get_user_service] = lambda: user_service_mock
+    app.dependency_overrides[get_auth_service] = lambda: mock_auth_service
 
     with TestClient(app) as c:
         yield c
@@ -110,3 +112,16 @@ def auth_service():
         access_token_expire_minutes=5,
         refresh_token_expire_days=7,
     )
+
+
+@pytest.fixture
+def mock_auth_service():
+    mock = MagicMock()
+    return mock
+
+
+@pytest.fixture
+def mock_request():
+    request = MagicMock(spec=Request)
+    request.cookies = {}
+    return request
