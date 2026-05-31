@@ -9,6 +9,7 @@ class Settings(BaseSettings):
 
     PEPPER: str = Field(init=False)
     DATABASE_URL: str = Field(init=False)
+    TEST_DATABASE_URL: str = Field(init=False)
 
     SECRET_KEY: str = Field(init=False)
     ALGORITHM: str = Field(init=False)
