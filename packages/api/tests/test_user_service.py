@@ -282,6 +282,66 @@ async def test_get_by_id_returns_none_for_non_existent_id(session):
 
 
 @pytest.mark.asyncio
+async def test_get_by_email_returns_user_successfully(session, user):
+    user_service = UserService(session)
+
+    searched_user = await user_service.get_by_email(email=user.email)
+
+    assert searched_user == user
+
+
+@pytest.mark.asyncio
+async def test_get_by_email_returns_none_for_non_existent_email(session):
+    user_service = UserService(session)
+
+    searched_user = await user_service.get_by_email(email='nao_existe@mail.com')
+
+    assert searched_user is None
+
+
+@pytest.mark.asyncio
+async def test_autenticate_successfully(session):
+    user_service = UserService(session)
+
+    email = 'timmy@mail.com'
+    username = 'timmy'
+    raw_password = 'minhasenha123'
+
+    user = await user_service.create_user(
+        email=email, username=username, password=raw_password
+    )
+
+    user_id = await user_service.autenticate(email=email, password=raw_password)
+
+    assert user_id == user.id
+
+
+@pytest.mark.asyncio
+async def test_autenticate_raises_error_when_email_not_found(session):
+    user_service = UserService(session)
+
+    with pytest.raises(PermissionError, match='Senha ou Email incorreto.'):
+        await user_service.autenticate(
+            email='fantasma@mail.com', password='123'
+        )
+
+
+@pytest.mark.asyncio
+async def test_autenticate_raises_error_when_password_is_incorrect(session):
+    user_service = UserService(session)
+
+    email = 'timmy@mail.com'
+    raw_password = 'senha_correta'
+
+    await user_service.create_user(
+        email=email, username='timmy', password=raw_password
+    )
+
+    with pytest.raises(PermissionError, match='Senha ou Email incorreto.'):
+        await user_service.autenticate(email=email, password='senha_errada')
+
+
+@pytest.mark.asyncio
 async def test_get_user_service_return_UserService(session):
     service = await get_user_service(session)
     assert isinstance(service, UserService)

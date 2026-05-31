@@ -1,6 +1,7 @@
+from http import HTTPStatus
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.database import get_session
@@ -38,3 +39,20 @@ def get_auth_service() -> AuthServiceInterface:
 type AuthServiceDependecy = Annotated[
     AuthServiceInterface, Depends(get_auth_service)
 ]
+
+
+def get_current_user_id(
+    request: Request, auth_service: AuthServiceDependecy
+) -> int:
+    token = request.cookies.get('access_token')
+    if not token:
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED, detail='Não autenticado'
+        )
+
+    try:
+        return auth_service.verify_token(token)
+    except ValueError:
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED, detail='Não autenticado'
+        )
