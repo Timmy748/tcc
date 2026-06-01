@@ -16,7 +16,12 @@ from api.security import get_password_hash
 from api.services.auth import AuthService
 from api.services.user import UserService
 from api.settings import Settings
-from tests.factories import UserFactory
+from tests.factories import (
+    PermissionFactory,
+    ProjectFactory,
+    RoleFactory,
+    UserFactory,
+)
 
 
 @pytest.fixture(scope='session')
@@ -67,6 +72,33 @@ async def user(session):
     await session.refresh(user)
 
     return user
+
+
+@pytest_asyncio.fixture
+async def role(session):
+    role = RoleFactory()
+    session.add(role)
+    await session.commit()
+    await session.refresh(role)
+    return role
+
+
+@pytest_asyncio.fixture
+async def permission(session):
+    permission = PermissionFactory()
+    session.add(permission)
+    await session.commit()
+    await session.refresh(permission)
+    return permission
+
+
+@pytest_asyncio.fixture
+async def project(session, user):
+    project = ProjectFactory(created_by=user.id)
+    session.add(project)
+    await session.commit()
+    await session.refresh(project)
+    return project
 
 
 @pytest_asyncio.fixture
