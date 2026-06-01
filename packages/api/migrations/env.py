@@ -9,7 +9,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from api.database import table_registry
 from api.settings import Settings
 from api.models.user import User
-from api.models.project import project
+from api.models.project import Project
+from api.models.permission import Permission
+from api.models.role_permissions import RolePermissions
+from api.models.role import Role
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
