@@ -17,6 +17,8 @@ from api.services.auth import AuthService
 from api.services.user import UserService
 from api.settings import Settings
 from tests.factories import (
+    AiAgentFactory,
+    ChatSessionFactory,
     PermissionFactory,
     ProjectFactory,
     RoleFactory,
@@ -99,6 +101,24 @@ async def project(session, user):
     await session.commit()
     await session.refresh(project)
     return project
+
+
+@pytest_asyncio.fixture
+async def ai_agent(session):
+    agent = AiAgentFactory()
+    session.add(agent)
+    await session.commit()
+    await session.refresh(agent)
+    return agent
+
+
+@pytest_asyncio.fixture
+async def chat_session(session, user, project):
+    session_chat = ChatSessionFactory(started_by=user.id, project_id=project.id)
+    session.add(session_chat)
+    await session.commit()
+    await session.refresh(session_chat)
+    return session_chat
 
 
 @pytest_asyncio.fixture

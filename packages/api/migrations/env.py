@@ -13,6 +13,9 @@ from api.models.project import Project
 from api.models.permission import Permission
 from api.models.role_permissions import RolePermissions
 from api.models.role import Role
+from api.models.chat_session import ChatSession
+from api.models.ai_agent import AiAgent
+from api.models.message import Message
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
