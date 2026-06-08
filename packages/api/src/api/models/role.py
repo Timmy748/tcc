@@ -1,13 +1,11 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.database import table_registry
 from api.models.base import TimestampMixin
 
 if TYPE_CHECKING:
-    from api.models.permission import Permission
     from api.models.role_permissions import RolePermissions
 
 
@@ -20,8 +18,4 @@ class Role(TimestampMixin):
 
     role_permissions: Mapped[list['RolePermissions']] = relationship(
         argument='RolePermissions', back_populates='role', init=False
-    )
-
-    permissions: AssociationProxy[list['Permission']] = association_proxy(
-        'role_permissions', 'permission', init=False
     )
