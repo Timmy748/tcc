@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from api.database import table_registry
@@ -15,4 +15,8 @@ class Project(TimestampMixin):
     name: Mapped[str]
     created_by: Mapped[Optional[int]] = mapped_column(
         ForeignKey('users.id', ondelete='SET NULL')
+    )
+
+    __table_args__ = (
+        UniqueConstraint('name', 'created_by', name='uq_name_created_by'),
     )

@@ -5,6 +5,7 @@ from api.models.chat_session import ChatSession
 from api.models.message import Message
 from api.models.permission import Permission
 from api.models.project import Project
+from api.models.project_members import ProjectMembers
 from api.models.role import Role
 from api.models.user import User
 
@@ -38,6 +39,15 @@ class ProjectFactory(factory.Factory):
 
     name = factory.Sequence(lambda n: f'Project Artificial Intelligence {n}')
     created_by = 1
+
+
+class ProjectMembersFactory(factory.Factory):
+    class Meta:
+        model = ProjectMembers
+
+    user_id = 1
+    project_id = 1
+    role_id = 1
 
 
 class AiAgentFactory(factory.Factory):

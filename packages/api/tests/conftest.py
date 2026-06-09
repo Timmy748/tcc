@@ -21,6 +21,7 @@ from tests.factories import (
     ChatSessionFactory,
     PermissionFactory,
     ProjectFactory,
+    ProjectMembersFactory,
     RoleFactory,
     UserFactory,
 )
@@ -104,6 +105,19 @@ async def project(session, user):
 
 
 @pytest_asyncio.fixture
+async def project_member(session, user, project, role):
+    project_member = ProjectMembersFactory(
+        user_id=user.id,
+        project_id=project.id,
+        role_id=role.id,
+    )
+    session.add(project_member)
+    await session.commit()
+    await session.refresh(project_member)
+    return project_member
+
+
+@pytest_asyncio.fixture
 async def ai_agent(session):
     agent = AiAgentFactory()
     session.add(agent)
@@ -143,6 +157,13 @@ def password_hash_patch(monkeypatch):
 def user_service_mock():
     mock = AsyncMock(spec=UserService)
     return mock
+
+
+@pytest.fixture
+def mock_permission_checker():
+    checker = AsyncMock()
+    checker.has_permission.return_value = True
+    return checker
 
 
 @pytest.fixture
