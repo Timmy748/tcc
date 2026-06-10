@@ -13,7 +13,7 @@ class ChatSession(TimestampMixin):
     title: Mapped[str]
     started_by: Mapped[int] = mapped_column(
         ForeignKey('users.id', ondelete='CASCADE')
-    )
+    )  # talvez mudar pra project_members.id
     project_id: Mapped[int] = mapped_column(
         ForeignKey('projects.id', ondelete='CASCADE')
     )

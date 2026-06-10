@@ -196,10 +196,9 @@ async def test_create_message_from_ai(
         msg = Message(
             chat_session_id=chat_session.id,
             content='Sugiro utilizar tons de azul e cinza espacial.',
-            sender_type=Message.SenderType.AI,
-            sender_user_id=None,
-            sender_ai_id=ai_agent.id,
         )
+        msg.sender_type = Message.SenderType.AI
+        msg.sender_ai_id = ai_agent.id
         session.add(msg)
         await session.commit()
 
