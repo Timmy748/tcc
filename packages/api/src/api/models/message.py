@@ -22,12 +22,12 @@ class Message(TimestampMixin):
     )
     content: Mapped[str] = mapped_column(TEXT)
     sender_type: Mapped[SenderType] = mapped_column(
-        Enum(SenderType, name='sender_type_enum')
+        Enum(SenderType, name='sender_type_enum'), init=False
     )
 
     sender_user_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey('users.id', ondelete='SET NULL')
+        ForeignKey('users.id', ondelete='SET NULL'), init=False
     )
     sender_ai_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey('ai_agents.id', ondelete='SET NULL')
+        ForeignKey('ai_agents.id', ondelete='SET NULL'), init=False
     )
