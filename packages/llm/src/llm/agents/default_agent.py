@@ -17,7 +17,7 @@ async def default_respond_node(state: AgentState) -> dict:
 
     response = await llm.ainvoke(messages_history)
 
-    return {'messages': [{'role': 'assistant', 'content': response.content}]}
+    return {'messages': [response]}
 
 
 workflow = StateGraph(AgentState)
